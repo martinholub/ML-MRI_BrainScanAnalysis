@@ -1,0 +1,24 @@
+
+mholub@student.ethz.ch
+kolinus@student.ethz.ch
+
+Preprocessing
+Crop, SplitIntoROIs, Scaling, ,
+
+Features
+Histogram, Normalizing, ,
+
+Model
+SVC, GridSearchCV, OneVsRestClassifier,
+
+Description
+
+For preprocessing
+1. Crop image's boundary voxels as much as possible, removing unnecessary 0 value voxels.
+2. Split image into 3x3x3 cubes, so that we can make histogram over a smaller area. The intution here is that certain parts of the brain contain information vital to distinguish between healthy and cognitive unhealthy brains. By looking at small parts you can more easily see deviations.
+
+For features
+Then we scale input values to have maximum at 255 to facilitate next step which is conversion of cubes into histograms. The histogram have [5,20,35,50,65,80] bins, the optimal number of bins is selected by CrossValidation. Zero value voxels are discarded. Before feeding data into the model it is normalized via StandardScaler.
+
+For model
+We wrap SVC classifier into OneVsRestClassifier. We proceed by doing exhaustive search over hyperparameters as well as number of bins via 10-fold GridSearchCV. We choose the best classifier as the one that minimizes mean*std of costs collected over 10 runs with random data shuffling. We believe that this should be a robust aproach that gives a compromise between minimzing cost and trying to avoid overfitting. The disadvantage of using OneVsRestClassifier is that the trained model is the same for all three labels(age, health, gender) of the output.
